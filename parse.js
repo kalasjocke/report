@@ -1,13 +1,11 @@
-const Moment = require('moment')
-const MomentRange = require('moment-range')
-
-const moment = MomentRange.extendMoment(Moment)
+const moment = require('moment')
 
 module.exports = {
   parse(text) {
     const lines = text.trim().split('\n')
     let context = null
     const entities = lines.reduce((acc, line) => {
+      line = line.trim()
       if (line === 'BEGIN:VEVENT') {
         context = {}
       } else if (line.startsWith('DTSTART')) {
@@ -26,7 +24,7 @@ module.exports = {
           project,
         } = context
         acc.push({
-          duration: moment.range(start, end).diff('hours'),
+          duration: moment.duration(end.diff(start)).asHours(),
           description,
           project,
           year: start.year(),
