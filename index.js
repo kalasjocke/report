@@ -16,6 +16,7 @@ function main() {
     .parse(process.argv)
 
   if (program.calendar && program.since && program.until) {
+    const totals = {}
     const table = new Table
     fetch(program.calendar).then(res => {
       res.text().then(data => {
@@ -30,6 +31,11 @@ function main() {
               table.cell('Duration', project.duration + 'h')
               table.cell('Description', project.descriptions.filter(d => d.trim() !== '').join(', '))
               table.newRow()
+
+              if (!totals[projectName]) {
+                totals[projectName] = 0
+              }
+              totals[projectName] += project.duration
             })
           } else {
             table.cell('Date', day.date.format('YYYY-MM-DD'))
@@ -37,6 +43,7 @@ function main() {
           }
         })
         console.log(table.toString())
+        console.log(totals)
       })
     })
   } else {
